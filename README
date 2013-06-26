@@ -1,0 +1,67 @@
+﻿SIMULADOR DE KERNEL DE LINUX 2.6	|
+Autores: 				|
+ * Hector Dominguez 09-10241		|
+ * Carlos Aponte 09-10041		|
+ * Krysler Pinto 09-10661		|
+ * Gustavo Ortega 09-10590		|
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+
+README
+
+Archivos que contiene este proyecto.
+
+* Constantes
+        - Constantes.java
+* Entrada_Salida
+        - generarProcesos.py
+        - procesos[1-12].xml : Archivos de prueba del proyecto simulador 
+* Funcionalidad
+        - AdministradorCPU.java
+        -CPU.java
+        - DispositivoIO.java
+        - LectorXML.java
+        - ListaDePrioridades.java
+        - Planificador.java
+        - Proceso.java
+        - Reloj.java
+        - Runqueue.java
+* Interfaz
+        - interfazSimulador.java : clase que define las características de la interfaz gráfica.
+        - ModeloTabla.java : modelo de las tablas de la interfaz donde cada elemento de las filas         
+        es un elemento de la clase Proceso.
+
+
+Breve explicación del método de resolución del problema planteado: 
+------------------------------------------------------------------
+
+        La interfaz se compone de dos paneles , el primero corresponde a la solicitud del nombre del archivo y del número de ticks . Además incluye las 4 tablas y las dos etiquetas donde se muestra a los procesos que se encuentran activos en CPU y en el Dispositivo IO. Las tablas poseen como modelo , aquel definido en la clase ModeloTabla.java donde se le indica que cada fila corresponde a un elemento de la clase proceso y posee métodos especiales para trabajar con ellos. La interfaz se actualiza cada cierto intervalo de tiempo para mostrar en las tablas de procesos activos, expirados, en cola del dispotivo IO y los terminados, los cambios que se han realizado a medida que los procesos van entrando y saliendo de CPU e I/O. Finalmente, la actualización de la interfaz culmina cuando la simulación ha terminado, y es a partir de ese momento cuando se muestran las estadísticas en el segundo panel que se encuentra en la parte inferior, antes de ello no era visible. 
+
+       La interfaz gráfica inicia la simulación ya que solicita al usuario una serie de parámetros como el nombre del archivo con extensión .xml y el número de ticks del CPU.  Seguidamente , se parsea el archivo .xml en funcion de los tags establecidos, yendo de mas a menos priemro se separa todo por procesos, los cuales toman los datos de los tags, asi como la lista de veces que deben entrar a CPU o a I/O (intercaladas) y el tiempo que deben usar el recurso. Ya con todos los datos necesarios la simulación inicia, creando todos los elementos necesarios: el reloj, el planificador, las colas, el CPU y el dispositivo IO. Cuando todos estos dispositivos antes mencionados estan enlazados adecuadamente, el reloj inicia su funcionamiento, arranca al CPU y al Dispositivo I/O, a los cuales va notificando del paso del tiempo.
+
+	Por su lado el planificador se encarga de ir gestionando el acceso de los precesos al CPU, asi como de la cola de activos y de expirados. EL planificador es el que en funcion de los ticks que marca el reloj va decrementando el quantum, decide quien entra al cpu, recalcula los quantum de los procesos salientes, quien va a agregarse a la cola del dispositivo, que proceso ya ha finalizado su ejecucion, asi como maneja el fin de la simulacion y realiza el calculo de estadisticas. 
+
+	El CPU y el Dispositivo I/O son muy similares en funcionamiento, ambos pueden atender aun solo proceso a la vez, en el caso del CPU este proceso se toma del tope de la lista de activos, o en ciertos casos el cpu es tomado por procesos que salen de I/O y lo expropian. Por el lado del dispositivo I/O el proceso que se elige sigue la tecnica de FIFO, y los que no esta usando el dispositivo estan en un estado de "dormidos". Una vez que el proceso sale del dispositivo I/O se le "despierta" pasa a la cola de activos, pero en lugar de calcular que posicion le toca, se le asigna automaticamente el CPU (expropia).
+
+
+Desiciones de Diseno:
+---------------------
+
+	Para comodidad y claridad a la hora de manejar los diversos tiempos de cada proceos se decidio trabajar con dos arralist, uno para tiempos del cPU y otros para los de I/O, ambos teniendo un 0 en la ultima posicion. A medida que el proceso usa el CPU o el dispositivo sus tiempos se van decrementando, cuando un tiempo llega a 0, se le saca del arreglo, de esta forma cuando se consiga que el tiempo es 0, se esta obteniendo la confirmacion de que ese proceso no usara mas el recurso.
+	
+	Limitacion de los tiempos de entrada de los procesos de 0 a 100 para facilitar su manejo y limitar la duracion de la simulacion.
+
+     ---------------------------
+==> | ACLARATORIAS IMPORTANTES  |
+     ---------------------------
+
+1) A la hora de indicar el archivo.xml se debe especificar la ruta absoluta al archivo!!
+
+	Ejemplo: 
+
+		/home/pedro/Simulador/procesos.xml
+
+2) Las estadisticas se muestran en la interfaz, pero es necesario ampliar la ventana del simulador.
+
+
+	
